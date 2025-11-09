@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import uuid
 
 
@@ -37,5 +38,43 @@ class Turno(object):
         return f"Id: {self.id[0:6]} - Cliente: {self.cliente} - Fecha y hora: {self.fecha_hora.strftime('%Y-%m-%d %H:%M')} - Duracion: {self.duracion_minutos} min - Servicio: {self.servicio}"
 
 #casos de ejemplo
-turno = Turno("Juan", "2022-01-01 10:00:00", 30, "Corte de cabello")
-print(turno)
+""" turno = Turno("Juan", "2022-01-01 10:00:00", 30, "Corte de cabello")
+print(turno) """
+
+class Peluqueria(object):
+    def __init__(self,nombre,horario_apertura="09:00",horario_cierre="20:00"):
+        self.nombre = nombre
+        self.turnos = []
+        self.clientes = []
+        self.horario_apertura = datetime.strptime(horario_apertura, "%H:%M").time()
+        self.horario_cierre = datetime.strptime(horario_cierre, "%H:%M").time()
+    
+    #Carga los clientes al inicio si existe el archivo
+    if os.path.exists("clientes.csv"):
+        self.cargar_clientes_desde_csv("clientes.csv")
+        
+    if os.path.exists("turnos.json"):
+        self.cargar_turnos_desde_csv("turnos.json")
+    
+    #Para buscar a los clientes se va a buscar su telefono, ya que es el dato mas importante en una peluqueria
+    def buscar_cliente(self,telefono):
+        for cliente in self.clientes:
+            if cliente.telefono == telefono:
+                return cliente
+            else:
+                return None
+    
+    #Para registrar al cliente voy a necesitar su nombre, telefono y email
+    def registrar_cliente(self,nombre,telefono,email=""):
+        cliente_existente = self.buscar_cliente(telefono)
+        if cliente_existente:
+            print(f"Ya existe un cliente con ese telefono: {cliente_existente.nombre}.")
+            return cliente_existente
+        
+        cliente = Cliente(nombre,telefono,email)
+        self.clientes.append(cliente)
+        print(f"Cliente registrado: {cliente}")
+        self.guardar_clientes_en_csv()
+        return cliente
+    
+    
