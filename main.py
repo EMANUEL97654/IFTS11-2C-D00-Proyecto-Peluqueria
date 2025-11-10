@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import os
 import uuid
+import csv
 
 
 class Cliente(object):
@@ -48,33 +49,45 @@ class Peluqueria(object):
         self.clientes = []
         self.horario_apertura = datetime.strptime(horario_apertura, "%H:%M").time()
         self.horario_cierre = datetime.strptime(horario_cierre, "%H:%M").time()
-    
-    #Carga los clientes al inicio si existe el archivo
-    if os.path.exists("clientes.csv"):
-        self.cargar_clientes_desde_csv("clientes.csv")
         
-    if os.path.exists("turnos.json"):
-        self.cargar_turnos_desde_csv("turnos.json")
+        #Carga los clientes al inicio si existe elarchivo
+        if os.path.exists("clientes.csv"):
+            self.cargar_clientes_desde_csv("clientes.csv")
+        
+        if os.path.exists("turnos.json"):
+            self.cargar_turnos_desde_csv("turnos.json")
     
-    #Para buscar a los clientes se va a buscar su telefono, ya que es el dato mas importante en una peluqueria
-    def buscar_cliente(self,telefono):
+    def buscar_cliente_por_telefono(self,telefono):
         for cliente in self.clientes:
             if cliente.telefono == telefono:
                 return cliente
-            else:
-                return None
+        return None
     
-    #Para registrar al cliente voy a necesitar su nombre, telefono y email
     def registrar_cliente(self,nombre,telefono,email=""):
-        cliente_existente = self.buscar_cliente(telefono)
+        cliente_existente = self.buscar_cliente_por_telefono(telefono)
         if cliente_existente:
             print(f"Ya existe un cliente con ese telefono: {cliente_existente.nombre}.")
-            return cliente_existente
         
         cliente = Cliente(nombre,telefono,email)
         self.clientes.append(cliente)
-        print(f"Cliente registrado: {cliente}")
         self.guardar_clientes_en_csv()
         return cliente
     
+    def guardar_clientes_en_csv(self, archivo="clientes.csv"):
+        with open(archivo,"w",newline="",encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Id","Nombre","Telefono","Email"])
+            for cliente in self.clientes:
+                writer.writerow([cliente.id,cliente.nombre,cliente.telefono,cliente.email])
+            print(f"Datos de clientes guardados en {archivo}.")
     
+    
+#cargar cliente a ver si funciona el guardado en csv
+""" pelu = Peluqueria("Peluqueria Emanuel")
+
+nombre = input("Ingrese el nombre del cliente: ")
+telefono = input("Ingrese el telefono del cliente: ")
+email = input("Ingrese el email del cliente: ")
+
+pelu.registrar_cliente(nombre,telefono,email) """
+
