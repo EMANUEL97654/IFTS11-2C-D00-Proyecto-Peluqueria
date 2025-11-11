@@ -81,6 +81,19 @@ class Peluqueria(object):
                 writer.writerow([cliente.id,cliente.nombre,cliente.telefono,cliente.email])
             print(f"Datos de clientes guardados en {archivo}.")
     
+    def cargar_clientes_desde_csv(self,archivo="clientes.csv"):
+        try:
+            with open(archivo,newline="",encoding="utf-8") as archivo:
+                reader = csv.DictReader(archivo)
+                for row in reader:
+                    if not self.buscar_cliente_por_telefono(row["Telefono"]):
+                        cliente = Cliente(row["Nombre"],row["Telefono"],row["Email"])
+                        cliente.id = row["Id"]
+                        self.clientes.append(cliente)
+            print(f"Datos de clientes cargados desde {archivo}.")
+        except FileNotFoundError:
+            print(f"Error al cargar clientes desde {archivo}. Archivo no encontrado.")
+    
     
 #cargar cliente a ver si funciona el guardado en csv
 """ pelu = Peluqueria("Peluqueria Emanuel")
@@ -90,4 +103,12 @@ telefono = input("Ingrese el telefono del cliente: ")
 email = input("Ingrese el email del cliente: ")
 
 pelu.registrar_cliente(nombre,telefono,email) """
+
+#cargar cliente desde csv prueba
+""" pelu = Peluqueria("Pasdasdasd")
+pelu.cargar_clientes_desde_csv("clientes.csv")
+
+for c in pelu.clientes:
+    print(f"ID: {c.id}, Nombre: {c.nombre}, Telefono: {c.telefono}, Email: {c.email}") """
+
 
