@@ -64,6 +64,14 @@ class Peluqueria(object):
         return None
     
     def registrar_cliente(self,nombre,telefono,email=""):
+        
+        while True: 
+            cliente_existente = self.buscar_cliente_por_telefono(telefono)
+            if cliente_existente:
+                print(f"Ya existe un cliente con ese telefono: {cliente_existente.nombre}.")
+                telefono = input("Ingrese otro telefono: ")
+            else:
+                break
         cliente_existente = self.buscar_cliente_por_telefono(telefono)
         if cliente_existente:
             print(f"Ya existe un cliente con ese telefono: {cliente_existente.nombre}.")
@@ -71,6 +79,7 @@ class Peluqueria(object):
         cliente = Cliente(nombre,telefono,email)
         self.clientes.append(cliente)
         self.guardar_clientes_en_csv()
+        print(f"Cliente registrado: {cliente.nombre}")
         return cliente
     
     def guardar_clientes_en_csv(self, archivo="clientes.csv"):
@@ -95,13 +104,40 @@ class Peluqueria(object):
             print(f"Error al cargar clientes desde {archivo}. Archivo no encontrado.")
     
     
+    #Area de gestion de turnos
+    def agregar_turno(self,cliente,fecha_hora,duracion,servicio):
+        fecha_finalizacion = fecha_hora + timedelta(minutos=duracion)
+        
+        if fecha_hora.time() < self.horario_apertura or fecha_finalizacion.time() > self.horario_cierre:
+            print(f"El turno se encuentra fuera del horario laboral ({self.horario_apertura.strftime('%H:%M') - self.horario_cierre.strftime('%H:%M')}).")
+            return
+        
+        #Chequear que no se solapen los turnos
+        for turno in self.turnos:
+            if turno.cliente == cliente:
+                print(f"El cliente {cliente.nombre} ya tiene un turno asignado.")
+                return
+            if fecha_hora < turno.fecha_hora_finalizacion and fecha_finalizacion > turno.fecha_hora:
+                print(f"El turno se solapa con el turno del cliente {turno.cliente.nombre}.")
+                return
+        
+        turno = Turno(cliente, fecha_hora, duracion, servicio)
+        self.turnos.append(turno)
+        self.turnos.sort(key=lambda turno: turno.fecha_hora)
+        print(f"TUrno agregado: {turno}")
+        self.guardar_turno_en_csv()
+        return turno
+        
+    
+    
+    
+    
 #cargar cliente a ver si funciona el guardado en csv
 """ pelu = Peluqueria("Peluqueria Emanuel")
 
 nombre = input("Ingrese el nombre del cliente: ")
 telefono = input("Ingrese el telefono del cliente: ")
 email = input("Ingrese el email del cliente: ")
-
 pelu.registrar_cliente(nombre,telefono,email) """
 
 #cargar cliente desde csv prueba
