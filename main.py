@@ -6,7 +6,7 @@ import csv
 
 class Cliente(object):
     def __init__(self,nombre,telefono,email=""):
-        self.id = str(uuid.uuid4())
+        self.id = str(uuid.uuid4())[0:4]
         self.nombre = nombre
         self.telefono = telefono
         self.email = email
@@ -19,8 +19,8 @@ class Cliente(object):
 print(cliente) """
 
 class Turno(object):
-    def __init__(self,cliente,fecha_hora,duracion_minutos,servicio):
-        self.id = str(uuid.uuid4())
+    def __init__(self,cliente,fecha_hora,duracion,servicio):
+        self.id = str(uuid.uuid4())[0:4]
         self.cliente = cliente
         
         #convierte la fecha y hora en string en caso de necesitarlo
@@ -29,14 +29,14 @@ class Turno(object):
         else:
             self.fecha_hora = fecha_hora
             
-        self.duracion_minutos = duracion_minutos
+        self.duracion = duracion
         self.servicio = servicio
-        self.fecha_finalizacion = self.fecha_hora + timedelta(minutes=duracion_minutos)
+        self.fecha_finalizacion = self.fecha_hora + timedelta(minutes=duracion)
         #uso timedelta para representar la diferencia entre dos fechas
         
 
     def __str__(self):
-        return f"Id: {self.id[0:6]} - Cliente: {self.cliente} - Fecha y hora: {self.fecha_hora.strftime('%Y-%m-%d %H:%M')} - Duracion: {self.duracion_minutos} min - Servicio: {self.servicio}"
+        return f"Id: {self.id[0:4]} - Cliente: {self.cliente} - Fecha y hora: {self.fecha_hora.strftime('%Y-%m-%d %H:%M')} - Duracion: {self.duracion} min - Servicio: {self.servicio}"
 
 #casos de ejemplo
 """ turno = Turno("Juan", "2022-01-01 10:00:00", 30, "Corte de cabello")
@@ -106,7 +106,7 @@ class Peluqueria(object):
     
     #Area de gestion de turnos
     def agregar_turno(self,cliente,fecha_hora,duracion,servicio):
-        fecha_finalizacion = fecha_hora + timedelta(minutos=duracion)
+        fecha_finalizacion = fecha_hora + timedelta(minutes=duracion)
         
         if fecha_hora.time() < self.horario_apertura or fecha_finalizacion.time() > self.horario_cierre:
             print(f"El turno se encuentra fuera del horario laboral ({self.horario_apertura.strftime('%H:%M') - self.horario_cierre.strftime('%H:%M')}).")
@@ -127,6 +127,20 @@ class Peluqueria(object):
         print(f"TUrno agregado: {turno}")
         self.guardar_turno_en_csv()
         return turno
+    
+    def guardar_turno_en_csv(self,archivo="turnos.csv"):
+        with open(archivo,"w",newline="",encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Id","nombre","telefono","servicio","Fecha","Hora"])
+            for turno in self.turnos:
+                writer.writerow([turno.id,
+                                 turno.cliente.nombre,
+                                 turno.cliente.telefono,
+                                 turno.fecha_hora.date().isoformat(),
+                                 turno.fecha_hora.time().strftime("%H:%M"),
+                                 turno.duracion])
+        
+        print(f"Datos de turno guardado en {archivo}")
         
     
     
@@ -146,5 +160,17 @@ pelu.cargar_clientes_desde_csv("clientes.csv")
 
 for c in pelu.clientes:
     print(f"ID: {c.id}, Nombre: {c.nombre}, Telefono: {c.telefono}, Email: {c.email}") """
+    
+#Guardar turno en csv
 
+""" fecha1 = datetime(2025,11,12,10,0)
+fecha2 = datetime(2025,11,12,11,0)
+fecha_fuera=datetime(2025,11,12,20,0)
+
+peluqueria = Peluqueria("Peluqueria Emanuel")
+
+cliente1 = peluqueria.registrar_cliente("Juan Perez","123456789","juanperez@gmail.com")
+peluqueria.agregar_turno(cliente1,fecha1,60,"Corte de cabello")
+
+peluqueria.guardar_turno_en_csv("turnos.csv") """
 
