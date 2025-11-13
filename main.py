@@ -150,6 +150,15 @@ class Peluqueria(object):
         for turno in self.turnos:
             print(turno)
     
+    def modificar_turno(self,id_turno,nueva_fecha):
+        for turno in self.turnos:
+            if turno.id.startswith(id_turno):
+                turno.fecha_hora = nueva_fecha
+                self.turnos.sort(key=lambda x: x.fecha_hora)
+                print("Turno modificado con éxito: {turno}")
+                return
+        print("No se encontró el turno a modificar.")
+    
     
     
     
@@ -182,5 +191,5 @@ peluqueria.agregar_turno(cliente1,fecha1,60,"Corte de cabello")
 peluqueria.guardar_turno_en_csv("turnos.csv") """
 
 #Falta agregar un metodo para cargar turnos para que lo reconozca el metodo listar turnos
-pelu = Peluqueria("Peluqueria Emanuel")
-pelu.listar_turnos()
+""" pelu = Peluqueria("Peluqueria Emanuel")
+pelu.listar_turnos() """
