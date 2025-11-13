@@ -142,6 +142,13 @@ class Peluqueria(object):
         
         print(f"Datos de turno guardado en {archivo}")
         
+    def listar_turnos(self):
+        if not self.turnos: 
+            print("No hay turnos registrados.")
+            return 
+        print("\n --- Lista de turnos ---")
+        for turno in self.turnos:
+            print(turno)
     
     
     
@@ -174,3 +181,6 @@ peluqueria.agregar_turno(cliente1,fecha1,60,"Corte de cabello")
 
 peluqueria.guardar_turno_en_csv("turnos.csv") """
 
+#Falta agregar un metodo para cargar turnos para que lo reconozca el metodo listar turnos
+pelu = Peluqueria("Peluqueria Emanuel")
+pelu.listar_turnos()
