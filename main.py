@@ -131,14 +131,14 @@ class Peluqueria(object):
     def guardar_turno_en_csv(self,archivo="turnos.csv"):
         with open(archivo,"w",newline="",encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(["Id","nombre","telefono","servicio","Fecha","Hora"])
+            writer.writerow(["Id","nombre","telefono","servicio","Fecha","Hora","duracion"])
             for turno in self.turnos:
                 writer.writerow([turno.id,
-                                 turno.cliente.nombre,
-                                 turno.cliente.telefono,
-                                 turno.fecha_hora.date().isoformat(),
-                                 turno.fecha_hora.time().strftime("%H:%M"),
-                                 turno.duracion])
+                                turno.cliente.nombre,
+                                turno.cliente.telefono,
+                                turno.fecha_hora.date().isoformat(),
+                                turno.fecha_hora.time().strftime("%H:%M"),
+                                turno.duracion])
         
         print(f"Datos de turno guardado en {archivo}")
         
@@ -192,4 +192,4 @@ peluqueria.guardar_turno_en_csv("turnos.csv") """
 
 #Falta agregar un metodo para cargar turnos para que lo reconozca el metodo listar turnos
 """ pelu = Peluqueria("Peluqueria Emanuel")
-pelu.listar_turnos() """
+pelu.listar_turnos()  """
