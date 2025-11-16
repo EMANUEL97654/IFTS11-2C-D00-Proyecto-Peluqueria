@@ -56,7 +56,7 @@ class Peluqueria(object):
             self.cargar_clientes_desde_csv("clientes.csv")
         
         if os.path.exists("turnos.json"):
-            self.cargar_turnos_desde_csv("turnos.json")
+            self.cargar_turnos_desde_json("turnos.json")
     
     def buscar_cliente_por_telefono(self,telefono):
         for cliente in self.clientes:
@@ -137,9 +137,11 @@ class Peluqueria(object):
                 writer.writerow([turno.id,
                                 turno.cliente.nombre,
                                 turno.cliente.telefono,
+                                turno.servicio,
                                 turno.fecha_hora.date().isoformat(),
                                 turno.fecha_hora.time().strftime("%H:%M"),
-                                turno.duracion])
+                                turno.duracion
+                                ])
         
         print(f"Datos de turno guardado en {archivo}")
         
@@ -234,3 +236,15 @@ peluqueria.guardar_turno_en_csv("turnos.csv") """
 #Falta agregar un metodo para cargar turnos para que lo reconozca el metodo listar turnos
 """ pelu = Peluqueria("Peluqueria Emanuel")
 pelu.listar_turnos()  """
+
+#Prueba para csv_a_json
+""" pelu = Peluqueria("Peluqueria Emanuel")
+cliente = Cliente("Ana","12345678777","ana@gmail.com")
+turno = Turno(cliente,"2025-01-01 10:00:00",30,"Coloracion")
+pelu.turnos.append(turno)
+pelu.guardar_turno_en_csv()
+
+pelu.csv_a_json("turnos.csv","turnos.json")
+
+with open("turnos.json","r",encoding="utf-8") as f:
+    print(f.read()) """
