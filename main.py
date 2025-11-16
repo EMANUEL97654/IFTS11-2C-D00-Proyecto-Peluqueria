@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 import os
 import uuid
 import csv
@@ -158,6 +159,46 @@ class Peluqueria(object):
                 print("Turno modificado con éxito: {turno}")
                 return
         print("No se encontró el turno a modificar.")
+        
+    def generar_slots_disponibles(self,fecha,duracion_slot=15):
+        fecha_inicial = datetime.combine(fecha.date(),self.horario_apertura)
+        fecha_final = datetime.combine(fecha.date(),self.horario_cierre)
+        slots = []
+        while fecha_inicial < fecha_final:
+            slots.append(fecha_inicial)
+            fecha_inicial += timedelta(minutes=duracion_slot)
+        return slots
+    
+    def mostrar_slots_disponibles(self,fecha,duracion_servicio,duracion_slot=15):
+        slots_iniciales = self.generar_slots_disponibles(fecha,duracion_slot)
+        print("\n ### Slots disponibles ###")
+        
+        for item,inicio in enumerate(slots_iniciales,1):
+            fin = inicio + timedelta(minutes=duracion_servicio)
+            if fin.time() > self.horario_cierre:
+                continue
+            #verificar si el slot esta disponible
+            ocupado = any(
+                (t.fecha_hora < fin and t.fecha_fin > inicio)
+                for t in self.turnos
+                if t.fecha_hora.date() == fecha.date()
+            )
+            estado = "[X]" if ocupado else "[ ]"
+            print(f"{item:02d}. {estado} {inicio.strftime('%H:%M')} - {fin.strftime('%H:%M')}")
+    
+    def csv_a_json(self,archivo_csv="turnos.csv",archivo_json="turnos.json"):
+        try:
+            with open(archivo_csv,newline="",encoding="utf-8") as archivo:
+                reader = csv.DictReader(archivo)
+                datos = list(reader)
+            with open(archivo_json,"w",encoding="utf-8") as archivoJson:
+                json.dump(datos,archivoJson,indent=4,ensure_ascii=False)
+            print("Archivo CSV convertido a JSON exitosamente")
+        except FileNotFoundError:
+            print("No se encontro el archivo CSV")
+        except Exception as e:
+            print(f"Ocurrio un error al convertir el archivo CSV a JSON: {e}")
+    
     
     
     
