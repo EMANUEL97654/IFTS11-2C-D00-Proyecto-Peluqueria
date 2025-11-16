@@ -93,8 +93,8 @@ class Peluqueria(object):
     
     def cargar_clientes_desde_csv(self,archivo="clientes.csv"):
         try:
-            with open(archivo,newline="",encoding="utf-8") as archivo:
-                reader = csv.DictReader(archivo)
+            with open(archivo,newline="",encoding="utf-8") as f:
+                reader = csv.DictReader(f)
                 for row in reader:
                     if not self.buscar_cliente_por_telefono(row["Telefono"]):
                         cliente = Cliente(row["Nombre"],row["Telefono"],row["Email"])
