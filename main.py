@@ -149,7 +149,7 @@ class Peluqueria(object):
         if not self.turnos: 
             print("No hay turnos registrados.")
             return 
-        print("\n --- Lista de turnos ---")
+        print("\n ### Lista de turnos ###")
         for turno in self.turnos:
             print(turno)
     
@@ -202,8 +202,42 @@ class Peluqueria(object):
             print(f"Ocurrio un error al convertir el archivo CSV a JSON: {e}")
     
     
-    
-    
+    def cargar_turnos_desde_json(self,archivo="turnos.json"):
+        try:
+            with open(archivo,"r",encoding="utf-8") as archivoJson:
+                datos = json.load(archivoJson)
+            
+            nuevos_turnos = []
+            #Recorro cada turno del json y busco al cliente por telefono
+            for item in datos:
+                cliente_nombre = item.get("nombre","")
+                telefono_cliente = item.get("telefono","")
+                servicio = item.get("servicio","")
+                fecha = item.get("Fecha","")
+                hora = item.get("Hora","")
+                duracion = int(item.get("duracion",0))
+                
+                #reconstruyo las fechas
+                fecha_inicio = datetime.fromisoformat(f"{fecha}T{hora}")
+                fecha_fin = fecha_inicio + timedelta(minutes=duracion)   
+                             
+                cliente = self.buscar_cliente_por_telefono(telefono_cliente)
+                #Si aun asi no lo encuentra lo omite
+                if not cliente:
+                    cliente = Cliente(cliente_nombre,telefono_cliente)
+                    self.clientes.append(cliente)
+                
+                turno = Turno(cliente,fecha_inicio,duracion,item["servicio"])
+                turno.id = item["Id"]
+                nuevos_turnos.append(turno)
+            
+            self.turnos.extend(nuevos_turnos)
+            self.turnos.sort(key=lambda t: t.fecha_hora)
+            print(f"Datos de turnos cargados desde {archivo}")
+        except FileNotFoundError:
+            print("No se encontro base de datos de turnos previa")
+        except Exception as e:
+            print(f"Error al cargar JSON: {e}")
     
 #cargar cliente a ver si funciona el guardado en csv
 """ pelu = Peluqueria("Peluqueria Emanuel")
@@ -248,3 +282,12 @@ pelu.csv_a_json("turnos.csv","turnos.json")
 
 with open("turnos.json","r",encoding="utf-8") as f:
     print(f.read()) """
+    
+#prueba para slots de turnos
+""" pelu = Peluqueria("Peluqueria Emanuel")
+pelu.mostrar_slots_disponibles("2025-01-01 10:00:00",30) """
+
+#Pruebo a ver si lee los turnos desde el json
+""" pelu = Peluqueria("Peluqueria Emanuel")
+pelu.listar_turnos() """
+
