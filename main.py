@@ -266,47 +266,65 @@ def menu():
                     print("No hay clientes registrados. Por favor, registre un cliente primero.")
                     continue
                 
-                telefono = input("Telefono del cliente")
+                telefono = input("Teléfono del cliente: ")
                 cliente = peluqueria.buscar_cliente_por_telefono(telefono)
                 if not cliente:
                     print("Cliente no encontrado.")
                     continue
                 
-                fecha = input("Ingrese la fecha del turno (DD/MM/AAAA): ")
-                fecha_str = datetime.strptime(fecha, "%d/%m/%Y")
-                hora = input("Ingrese la hora del turno (HH:MM): ")
-                
+                # --- FECHA ---
+                fecha_input = input("Ingrese la fecha del turno (DD/MM/AAAA): ")
+                fecha = datetime.strptime(fecha_input, "%d/%m/%Y")   # fecha como datetime
+
+                # --- SERVICIO ---
                 servicio = input("Ingrese el servicio a realizar: ")
+
+                # --- DURACIÓN ---
                 duracion = int(input("Ingrese la duración del servicio en minutos: "))
-                
-                slots = peluqueria.mostrar_slots_disponibles(fecha,duracion_servicio=duracion,duracion_slot=15)
-                
-                opcion_slot = int(input("Selecciones un numero de slot disponible: "))
+
+                # --- MOSTRAR SLOTS DISPONIBLES ---
+                slots = peluqueria.generar_slots_disponibles(fecha)   # genera lista real de slots
+
+                print("\n### SLOTS DISPONIBLES ###")
+                for i, inicio in enumerate(slots, 1):
+                    fin = inicio + timedelta(minutes=duracion)
+
+                    # 1. No pasar el horario de cierre
+                    if fin.time() > peluqueria.horario_cierre:
+                        continue
+
+                    # 2. Revisar solapamientos
+                    ocupado = any(
+                        (t.fecha_hora < fin and t.fecha_finalizacion > inicio)
+                        for t in peluqueria.turnos
+                        if t.fecha_hora.date() == fecha.date()
+                    )
+
+                    estado = "[X]" if ocupado else "[ ]"
+                    print(f"{i:02d}. {estado} {inicio.strftime('%H:%M')} - {fin.strftime('%H:%M')}")
+
+                # --- SELECCIONAR SLOT ---
+                opcion_slot = int(input("Seleccione un número de slot disponible: "))
                 if opcion_slot < 1 or opcion_slot > len(slots):
                     print("Opción inválida.")
                     continue
-                
+
                 inicio_slot = slots[opcion_slot - 1]
                 fin_slot = inicio_slot + timedelta(minutes=duracion)
 
-                #Verificar si esta dentro del horario laboral
-                if fin_slot.time() > peluqueria.horario_cierre:
-                    print("El turno se extiende mas alla del horario de cierre.")
-                    continue
-                
-                solapado = any((
-                    turno.fecha_hora < fin_slot and turno_fecha_fin >inicio_slot)
-                               for turno in peluqueria.turnos
-                               if turno.fecha_hora.date() == fecha.date()
-                               )
-                
+                # Verificar nuevamente
+                solapado = any(
+                    (t.fecha_hora < fin_slot and t.fecha_finalizacion > inicio_slot)
+                    for t in peluqueria.turnos
+                    if t.fecha_hora.date() == fecha.date()
+                )
+
                 if solapado:
-                    print("El turno se solapa con otro turno existente. Elija otro.")
+                    print("El turno se solapa con otro. Seleccione otro horario.")
                     continue
-                
-                peluqueria.agregar_turno(cliente,inicio_slot,duracion,servicio)
+
+                peluqueria.agregar_turno(cliente, inicio_slot, duracion, servicio)
                 print("Turno agregado exitosamente.")
-                break
         
         except Exception as e:
             print(f"Ocurrio un error inesperado: {e}")
