@@ -238,8 +238,82 @@ class Peluqueria(object):
             print("No se encontro base de datos de turnos previa")
         except Exception as e:
             print(f"Error al cargar JSON: {e}")
+            
+def menu():
+    peluqueria = Peluqueria("Peluqueria Emanuel")
     
-#cargar cliente a ver si funciona el guardado en csv
+    while True:
+        print("\nBienvenido a la peluqueria Emanuel")
+        print("\n ### MENU PRINCIPAL ###")
+        print("1. Registrar nuevo cliente")
+        print("2. Solicitar turno")
+        print("3. Listar turnos existentes")
+        print("4. Modificar turno")
+        print("5. Cancelar turno")
+        print("6. Guardar/Convertir Turnos de csv a Json")
+        print("7. Salir")
+        
+        opcion = input("Ingrese una opcion: ")
+        
+        try:
+            if opcion == "1":
+                nombre = input("Ingrese el nombre del cliente: ")
+                telefono = input("Ingrese el telefono del cliente: ")
+                email = input("Ingrese el email del cliente: ")
+                peluqueria.registrar_cliente(nombre, telefono, email)
+            elif opcion == "2":
+                if not peluqueria.clientes:
+                    print("No hay clientes registrados. Por favor, registre un cliente primero.")
+                    continue
+                
+                telefono = input("Telefono del cliente")
+                cliente = peluqueria.buscar_cliente_por_telefono(telefono)
+                if not cliente:
+                    print("Cliente no encontrado.")
+                    continue
+                
+                fecha = input("Ingrese la fecha del turno (DD/MM/AAAA): ")
+                fecha_str = datetime.strptime(fecha, "%d/%m/%Y")
+                hora = input("Ingrese la hora del turno (HH:MM): ")
+                
+                servicio = input("Ingrese el servicio a realizar: ")
+                duracion = int(input("Ingrese la duración del servicio en minutos: "))
+                
+                slots = peluqueria.mostrar_slots_disponibles(fecha,duracion_servicio=duracion,duracion_slot=15)
+                
+                opcion_slot = int(input("Selecciones un numero de slot disponible: "))
+                if opcion_slot < 1 or opcion_slot > len(slots):
+                    print("Opción inválida.")
+                    continue
+                
+                inicio_slot = slots[opcion_slot - 1]
+                fin_slot = inicio_slot + timedelta(minutes=duracion)
+
+                #Verificar si esta dentro del horario laboral
+                if fin_slot.time() > peluqueria.horario_cierre:
+                    print("El turno se extiende mas alla del horario de cierre.")
+                    continue
+                
+                solapado = any((
+                    turno.fecha_hora < fin_slot and turno_fecha_fin >inicio_slot)
+                               for turno in peluqueria.turnos
+                               if turno.fecha_hora.date() == fecha.date()
+                               )
+                
+                if solapado:
+                    print("El turno se solapa con otro turno existente. Elija otro.")
+                    continue
+                
+                peluqueria.agregar_turno(cliente,inicio_slot,duracion,servicio)
+                print("Turno agregado exitosamente.")
+                break
+        
+        except Exception as e:
+            print(f"Ocurrio un error inesperado: {e}")
+            
+            
+            
+            #cargar cliente a ver si funciona el guardado en csv
 """ pelu = Peluqueria("Peluqueria Emanuel")
 
 nombre = input("Ingrese el nombre del cliente: ")
@@ -291,3 +365,6 @@ pelu.mostrar_slots_disponibles("2025-01-01 10:00:00",30) """
 """ pelu = Peluqueria("Peluqueria Emanuel")
 pelu.listar_turnos() """
 
+#prueba a ver si el menu funciona
+#Esto funciona pero genera un loop infinito
+""" menu() """
