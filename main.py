@@ -69,19 +69,42 @@ class Peluqueria(object):
         while True: 
             cliente_existente = self.buscar_cliente_por_telefono(telefono)
             if cliente_existente:
-                print(f"Ya existe un cliente con ese telefono: {cliente_existente.nombre}.")
+                print(f"Ya existe un cliente con ese telefono: {cliente_existente.telefono}.")
                 telefono = input("Ingrese otro telefono: ")
             else:
                 break
         cliente_existente = self.buscar_cliente_por_telefono(telefono)
         if cliente_existente:
-            print(f"Ya existe un cliente con ese telefono: {cliente_existente.nombre}.")
+            print(f"Ya existe un cliente con ese telefono: {cliente_existente.telefono}.")
         
         cliente = Cliente(nombre,telefono,email)
         self.clientes.append(cliente)
         self.guardar_clientes_en_csv()
         print(f"Cliente registrado: {cliente.nombre}")
         return cliente
+    
+    def listar_clientes(self):
+        if not self.clientes:
+            print("No hay clientes registrados en memoria.")
+            # Opcional: intentar recargar por si acaso
+            if os.path.exists("clientes.csv"):
+                print("Intentando cargar clientes desde clientes.csv...")
+                self.cargar_clientes_desde_csv("clientes.csv")
+                if not self.clientes:
+                    print("El archivo clientes.csv existe pero está vacío o no tiene formato válido.")
+                    return
+            else:
+                return
+        
+        print("\n ### Lista de clientes registrados (en memoria) ###")
+        # Mostrar el encabezado de la tabla
+        print("-" * 60)
+        print(f"{'ID':<6}{'Nombre':<20}{'Teléfono':<15}{'Email':<19}")
+        print("-" * 60)
+        
+        for cliente in self.clientes:
+            print(f"{cliente.id:<6}{cliente.nombre:<20}{cliente.telefono:<15}{cliente.email:<19}")
+        print("-" * 60)
     
     def guardar_clientes_en_csv(self, archivo="clientes.csv"):
         with open(archivo,"w",newline="",encoding="utf-8") as file:
@@ -251,7 +274,8 @@ def menu():
         print("4. Modificar turno")
         print("5. Cancelar turno")
         print("6. Guardar/Convertir Turnos de csv a Json")
-        print("7. Salir")
+        print("7. Ver clientes registrados")
+        print("8. Salir")
         
         opcion = input("Ingrese una opcion: ")
         
@@ -325,10 +349,45 @@ def menu():
 
                 peluqueria.agregar_turno(cliente, inicio_slot, duracion, servicio)
                 print("Turno agregado exitosamente.")
+            
+            elif opcion == "3":
+                peluqueria.listar_turnos()
+                
+            elif opcion == "4":
+                peluqueria.listar_turnos()
+                id_turno = input("Ingrese el ID del turno a modificar: ")
+                nueva_fecha_string = input("Nueva fecha y hora (DD/MM/AAAA HH:MM): ")
+                nueva_fecha = datetime.strptime(nueva_fecha_string, "%d/%m/%Y %H:%M")
+                peluqueria.modificar_turno(id_turno, nueva_fecha)
+                
+            elif opcion == "5":
+                peluqueria.listar_turnos()
+                id_turno = input("Ingrese el ID del turno a eliminar: ")
+                peluqueria.eliminar_turno(id_turno)
+            
+            elif opcion == "6":
+                peluqueria.guardar_turnos_csv("turnos.csv")
+                peluqueria.csv_a_json()
+                
+            elif opcion == "7":
+                print("Mostrando la lista de clientes registrados")
+                peluqueria.clientes = []
+                peluqueria.cargar_clientes_desde_csv()
+                peluqueria.listar_clientes()
+            
+            elif opcion == "8":
+                print("Saliendo del sistema...")
+                break
+            else:
+                print("Opción inválida. Por favor, ingrese una opción válida.")
         
         except Exception as e:
             print(f"Ocurrio un error inesperado: {e}")
             
+
+#Donde se va a ejecutar el programa principal
+if __name__ == "__main__":
+    menu()
             
             
             #cargar cliente a ver si funciona el guardado en csv
@@ -386,3 +445,4 @@ pelu.listar_turnos() """
 #prueba a ver si el menu funciona
 #Esto funciona pero genera un loop infinito
 """ menu() """
+
