@@ -7,6 +7,7 @@ import csv
 
 class Cliente(object):
     def __init__(self,nombre,telefono,email=""):
+        #Genero un id unico corto usando la libreria uuid
         self.id = str(uuid.uuid4())[0:4]
         self.nombre = nombre
         self.telefono = telefono
@@ -21,6 +22,7 @@ print(cliente) """
 
 class Turno(object):
     def __init__(self,cliente,fecha_hora,duracion,servicio):
+        #Genero un id unico para el turno
         self.id = str(uuid.uuid4())[0:4]
         self.cliente = cliente
         
@@ -48,13 +50,15 @@ class Peluqueria(object):
         self.nombre = nombre
         self.turnos = []
         self.clientes = []
+        #Convierto horarios a objetos time
         self.horario_apertura = datetime.strptime(horario_apertura, "%H:%M").time()
         self.horario_cierre = datetime.strptime(horario_cierre, "%H:%M").time()
         
-        #Carga los clientes al inicio si existe elarchivo
+        #Carga los clientes al inicio si existe el archivo
         if os.path.exists("clientes.csv"):
             self.cargar_clientes_desde_csv("clientes.csv")
         
+        #Carga los turnos al inicio si existe el archivo
         if os.path.exists("turnos.json"):
             self.cargar_turnos_desde_json("turnos.json")
     
@@ -65,7 +69,7 @@ class Peluqueria(object):
         return None
     
     def registrar_cliente(self,nombre,telefono,email=""):
-        
+        #Evito registrar clientes duplicados por telefono
         while True: 
             cliente_existente = self.buscar_cliente_por_telefono(telefono)
             if cliente_existente:
@@ -83,6 +87,7 @@ class Peluqueria(object):
         print(f"Cliente registrado: {cliente.nombre}")
         return cliente
     
+    #Listo todos los clientes en memoria
     def listar_clientes(self):
         if not self.clientes:
             print("No hay clientes registrados en memoria.")
@@ -106,6 +111,7 @@ class Peluqueria(object):
             print(f"{cliente.id:<6}{cliente.nombre:<20}{cliente.telefono:<15}{cliente.email:<19}")
         print("-" * 60)
     
+    #Guardo todos los clientes en un csv
     def guardar_clientes_en_csv(self, archivo="clientes.csv"):
         with open(archivo,"w",newline="",encoding="utf-8") as file:
             writer = csv.writer(file)
@@ -129,9 +135,10 @@ class Peluqueria(object):
     
     
     #Area de gestion de turnos
+    
     def agregar_turno(self,cliente,fecha_hora,duracion,servicio):
         fecha_finalizacion = fecha_hora + timedelta(minutes=duracion)
-        
+        #Comprobacion del horario laboral
         if fecha_hora.time() < self.horario_apertura or fecha_finalizacion.time() > self.horario_cierre:
             print(
                 f"El turno se encuentra fuera del horario laboral "
@@ -146,7 +153,7 @@ class Peluqueria(object):
             if fecha_hora < turno.fecha_finalizacion and fecha_finalizacion > turno.fecha_hora:
                 print(f"El turno se solapa con el turno del cliente {turno.cliente.nombre}.")
                 return
-        
+        #Si pasa todas las validaciones, se agrega el turno
         turno = Turno(cliente, fecha_hora, duracion, servicio)
         self.turnos.append(turno)
         self.turnos.sort(key=lambda turno: turno.fecha_hora)
@@ -199,7 +206,8 @@ class Peluqueria(object):
                 print(f"Turno modificado con éxito: {turno}")
                 return
         print("No se encontró el turno a modificar.")
-        
+    
+    #Genero una lista de horarios disponibles de un dia
     def generar_slots_disponibles(self,fecha,duracion_slot=15):
         fecha_inicial = datetime.combine(fecha.date(),self.horario_apertura)
         fecha_final = datetime.combine(fecha.date(),self.horario_cierre)
@@ -329,11 +337,11 @@ def menu():
                 for i, inicio in enumerate(slots, 1):
                     fin = inicio + timedelta(minutes=duracion)
 
-                    # 1. No pasar el horario de cierre
+                    #No pasar del horario de cierre
                     if fin.time() > peluqueria.horario_cierre:
                         continue
 
-                    # 2. Revisar solapamientos
+                    #Revisar solapamientos
                     ocupado = any(
                         (t.fecha_hora < fin and t.fecha_finalizacion > inicio)
                         for t in peluqueria.turnos
@@ -405,7 +413,7 @@ if __name__ == "__main__":
     menu()
             
             
-            #cargar cliente a ver si funciona el guardado en csv
+#cargar cliente a ver si funciona el guardado en csv
 """ pelu = Peluqueria("Peluqueria Emanuel")
 
 nombre = input("Ingrese el nombre del cliente: ")
