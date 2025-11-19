@@ -55,12 +55,12 @@ class Peluqueria(object):
         self.horario_cierre = datetime.strptime(horario_cierre, "%H:%M").time()
         
         #Carga los clientes al inicio si existe el archivo
-        if os.path.exists("clientes.csv"):
-            self.cargar_clientes_desde_csv("clientes.csv")
+        if os.path.exists("Clientes/clientes.csv"):
+            self.cargar_clientes_desde_csv("Clientes/clientes.csv")
         
         #Carga los turnos al inicio si existe el archivo
-        if os.path.exists("turnos.json"):
-            self.cargar_turnos_desde_json("turnos.json")
+        if os.path.exists("Turnos/turnos.json"):
+            self.cargar_turnos_desde_json("Turnos/turnos.json")
     
     def buscar_cliente_por_telefono(self,telefono):
         for cliente in self.clientes:
@@ -94,7 +94,7 @@ class Peluqueria(object):
             # Opcional: intentar recargar por si acaso
             if os.path.exists("clientes.csv"):
                 print("Intentando cargar clientes desde clientes.csv...")
-                self.cargar_clientes_desde_csv("clientes.csv")
+                self.cargar_clientes_desde_csv("Clientes/clientes.csv")
                 if not self.clientes:
                     print("El archivo clientes.csv existe pero está vacío o no tiene formato válido.")
                     return
@@ -113,7 +113,7 @@ class Peluqueria(object):
         print("-" * 60)
     
     #Guardo todos los clientes en un csv
-    def guardar_clientes_en_csv(self, archivo="clientes.csv"):
+    def guardar_clientes_en_csv(self, archivo="Clientes/clientes.csv"):
         with open(archivo,"w",newline="",encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerow(["Id","Nombre","Telefono","Email"])
@@ -121,7 +121,7 @@ class Peluqueria(object):
                 writer.writerow([cliente.id,cliente.nombre,cliente.telefono,cliente.email])
             print(f"Datos de clientes guardados en {archivo}.")
     
-    def cargar_clientes_desde_csv(self,archivo="clientes.csv"):
+    def cargar_clientes_desde_csv(self,archivo="Clientes/clientes.csv"):
         try:
             with open(archivo,newline="",encoding="utf-8") as f:
                 reader = csv.DictReader(f)
@@ -162,7 +162,7 @@ class Peluqueria(object):
         self.guardar_turno_en_csv()
         return turno
     
-    def guardar_turno_en_csv(self,archivo="turnos.csv"):
+    def guardar_turno_en_csv(self,archivo="Turnos/turnos.csv"):
         with open(archivo,"w",newline="",encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(["Id","nombre","telefono","servicio","Fecha","Hora","duracion"])
@@ -235,7 +235,7 @@ class Peluqueria(object):
             estado = "[X]" if ocupado else "[ ]"
             print(f"{item:02d}. {estado} {inicio.strftime('%H:%M')} - {fin.strftime('%H:%M')}")
     
-    def csv_a_json(self,archivo_csv="turnos.csv",archivo_json="turnos.json"):
+    def csv_a_json(self,archivo_csv="Turnos/turnos.csv",archivo_json="Turnos/turnos.json"):
         try:
             with open(archivo_csv,newline="",encoding="utf-8") as archivo:
                 reader = csv.DictReader(archivo)
@@ -249,7 +249,7 @@ class Peluqueria(object):
             print(f"Ocurrio un error al convertir el archivo CSV a JSON: {e}")
     
     
-    def cargar_turnos_desde_json(self,archivo="turnos.json"):
+    def cargar_turnos_desde_json(self,archivo="Turnos/turnos.json"):
         try:
             with open(archivo,"r",encoding="utf-8") as archivoJson:
                 datos = json.load(archivoJson)
@@ -469,4 +469,5 @@ pelu.listar_turnos() """
 #prueba a ver si el menu funciona
 #Esto funciona pero genera un loop infinito
 """ menu() """
+
 
