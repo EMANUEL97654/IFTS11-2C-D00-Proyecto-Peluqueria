@@ -133,7 +133,9 @@ class Peluqueria(object):
         fecha_finalizacion = fecha_hora + timedelta(minutes=duracion)
         
         if fecha_hora.time() < self.horario_apertura or fecha_finalizacion.time() > self.horario_cierre:
-            print(f"El turno se encuentra fuera del horario laboral ({self.horario_apertura.strftime('%H:%M') - self.horario_cierre.strftime('%H:%M')}).")
+            print(
+                f"El turno se encuentra fuera del horario laboral "
+                f"({self.horario_apertura.strftime('%H:%M')} - {self.horario_cierre.strftime('%H:%M')}).")
             return
         
         #Chequear que no se solapen los turnos
@@ -141,14 +143,14 @@ class Peluqueria(object):
             if turno.cliente == cliente:
                 print(f"El cliente {cliente.nombre} ya tiene un turno asignado.")
                 return
-            if fecha_hora < turno.fecha_hora_finalizacion and fecha_finalizacion > turno.fecha_hora:
+            if fecha_hora < turno.fecha_finalizacion and fecha_finalizacion > turno.fecha_hora:
                 print(f"El turno se solapa con el turno del cliente {turno.cliente.nombre}.")
                 return
         
         turno = Turno(cliente, fecha_hora, duracion, servicio)
         self.turnos.append(turno)
         self.turnos.sort(key=lambda turno: turno.fecha_hora)
-        print(f"TUrno agregado: {turno}")
+        print(f"Turno agregado: {turno}")
         self.guardar_turno_en_csv()
         return turno
     
@@ -176,12 +178,25 @@ class Peluqueria(object):
         for turno in self.turnos:
             print(turno)
     
+    def eliminar_turno(self,id_turno):
+        for turno in self.turnos:
+            if turno.id.startswith(id_turno):
+                self.turnos.remove(turno)
+                print("Turno eliminado.")
+                #agrego persistencia
+                self.guardar_turno_en_csv()
+                return
+        print("No se encontró el turno.")
+    
     def modificar_turno(self,id_turno,nueva_fecha):
         for turno in self.turnos:
             if turno.id.startswith(id_turno):
                 turno.fecha_hora = nueva_fecha
+                turno.fecha_finalizacion = nueva_fecha + timedelta(minutes=turno.duracion)
                 self.turnos.sort(key=lambda x: x.fecha_hora)
-                print("Turno modificado con éxito: {turno}")
+                #agrego persistencia
+                self.guardar_turno_en_csv()
+                print(f"Turno modificado con éxito: {turno}")
                 return
         print("No se encontró el turno a modificar.")
         
@@ -366,12 +381,11 @@ def menu():
                 peluqueria.eliminar_turno(id_turno)
             
             elif opcion == "6":
-                peluqueria.guardar_turnos_csv("turnos.csv")
+                peluqueria.guardar_turno_en_csv("turnos.csv")
                 peluqueria.csv_a_json()
                 
             elif opcion == "7":
                 print("Mostrando la lista de clientes registrados")
-                peluqueria.clientes = []
                 peluqueria.cargar_clientes_desde_csv()
                 peluqueria.listar_clientes()
             
