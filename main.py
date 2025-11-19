@@ -293,7 +293,7 @@ def menu():
         print("\nBienvenido a la peluqueria Emanuel")
         print("\n ### MENU PRINCIPAL ###")
         print("1. Registrar nuevo cliente")
-        print("2. Solicitar turno")
+        print("2. Registar turno")
         print("3. Listar turnos existentes")
         print("4. Modificar turno")
         print("5. Cancelar turno")

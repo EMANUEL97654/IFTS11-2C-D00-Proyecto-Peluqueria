@@ -94,12 +94,15 @@ python peluqueria.py
 
 El sistema mostrará un menú por consola que permite:
 
-1)Registrar cliente
-2)Solicitar turno
-3)Listar turnos
-4)Modificar turno
-5)Guardar o convertir archivos
-6)Salir
+1) Registrar nuevo cliente
+2) Solicitar turno
+3) Listar turnos existentes
+4) Modificar turno
+5) Cancelar turno
+6) Guardar/convertir turno de csv a Json
+7) Ver cliente registrados
+8) Salir
+
 
 📄 Licencia
 
