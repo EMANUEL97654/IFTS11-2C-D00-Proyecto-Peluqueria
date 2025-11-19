@@ -301,6 +301,7 @@ def menu():
                 email = input("Ingrese el email del cliente: ")
                 peluqueria.registrar_cliente(nombre, telefono, email)
             elif opcion == "2":
+                peluqueria.listar_clientes()
                 if not peluqueria.clientes:
                     print("No hay clientes registrados. Por favor, registre un cliente primero.")
                     continue
