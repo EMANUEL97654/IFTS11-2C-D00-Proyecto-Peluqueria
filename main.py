@@ -104,6 +104,7 @@ class Peluqueria(object):
         print("\n ### Lista de clientes registrados (en memoria) ###")
         # Mostrar el encabezado de la tabla
         print("-" * 60)
+        #Calculo los espacios para que queden bien alineados
         print(f"{'ID':<6}{'Nombre':<20}{'Teléfono':<15}{'Email':<19}")
         print("-" * 60)
         
