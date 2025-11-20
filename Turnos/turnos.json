@@ -1,0 +1,11 @@
+[
+    {
+        "Id": "6175",
+        "nombre": "Juan Perez",
+        "telefono": "123456789",
+        "servicio": "Barberia",
+        "Fecha": "2025-11-24",
+        "Hora": "17:00",
+        "duracion": "60"
+    }
+]
