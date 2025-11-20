@@ -191,9 +191,9 @@ pelu.listar_turnos() """
 """ menu() """
 
 #Pruebo registrar un peluquero
-pelu = Peluqueria("Peluqueria Emanuel")
+""" pelu = Peluqueria("Peluqueria Emanuel")
 nombre_peluquero = input("Ingrese el nombre del peluquero: ")
 especialidad = input("Ingrese la especialidad del peluquero: ")
 
 peluquero = pelu.registrar_peluquero(nombre_peluquero,especialidad)
-print(peluquero)
+print(peluquero) """

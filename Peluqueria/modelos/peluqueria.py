@@ -27,7 +27,7 @@ class Peluqueria(object):
             self.cargar_turnos_desde_json("Turnos/turnos.json")
             
         if os.path.exists("Peluqueros/peluqueros.csv"):
-            self.cargar_peluqueros_desde_json("Peluqueros/peluqueros.csv")
+            self.cargar_peluqueros_desde_csv("Peluqueros/peluqueros.csv")
     
     def buscar_cliente_por_telefono(self,telefono):
         for cliente in self.clientes:
@@ -54,8 +54,8 @@ class Peluqueria(object):
         print(f"Cliente registrado: {cliente.nombre}")
         return cliente
     
-    def registrar_peluquero(self, nombre, especialidad="", telefono=""):
-        peluquero = Peluquero(nombre, especialidad, telefono)
+    def registrar_peluquero(self, nombre, especialidad=""):
+        peluquero = Peluquero(nombre, especialidad)
         self.peluqueros.append(peluquero)
         self.guardar_peluqueros_en_csv()
         return peluquero
