@@ -15,8 +15,7 @@ def menu():
         print("5. Cancelar turno")
         print("6. Guardar/Convertir Turnos de csv a Json")
         print("7. Ver clientes registrados")
-        print("8. Guardar peluqueros en CSV")
-        print("9. Salir")
+        print("8. Salir")
         
         opcion = input("Ingrese una opcion: ")
         
@@ -115,11 +114,8 @@ def menu():
                 print("Mostrando la lista de clientes registrados")
                 peluqueria.cargar_clientes_desde_csv()
                 peluqueria.listar_clientes()
-            
-            elif opcion == "8":
-                peluqueria.guardar_peluqueros_en_csv()
                 
-            elif opcion == "9":
+            elif opcion == "8":
                 print("Saliendo del programa...")
                 break
             else:
@@ -130,8 +126,8 @@ def menu():
             
 
 #Donde se va a ejecutar el programa principal
-""" if __name__ == "__main__":
-    menu() """
+if __name__ == "__main__":
+    menu()
             
             
 #cargar cliente a ver si funciona el guardado en csv
@@ -190,14 +186,5 @@ pelu.listar_turnos() """
 #Esto funciona pero genera un loop infinito
 """ menu() """
 
-#Pruebo registrar un peluquero
-""" pelu = Peluqueria("Peluqueria Emanuel")
-nombre_peluquero = input("Ingrese el nombre del peluquero: ")
-especialidad = input("Ingrese la especialidad del peluquero: ")
 
-peluquero = pelu.registrar_peluquero(nombre_peluquero,especialidad)
-print(peluquero) """
-
-pelu = Peluqueria("Peluqueria Emanuel")
-pelu.listar_peluqueros()
 

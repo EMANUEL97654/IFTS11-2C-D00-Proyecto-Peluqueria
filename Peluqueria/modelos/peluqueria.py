@@ -5,7 +5,6 @@ import json
 
 from modelos.cliente import Cliente
 from modelos.turno import Turno
-from modelos.peluqueros import Peluquero
 
 
 class Peluqueria(object):
@@ -13,8 +12,6 @@ class Peluqueria(object):
         self.nombre = nombre
         self.turnos = []
         self.clientes = []
-        self.peluqueros = []
-        self.cargar_peluqueros_desde_csv()
         #Convierto horarios a objetos time
         self.horario_apertura = datetime.strptime(horario_apertura, "%H:%M").time()
         self.horario_cierre = datetime.strptime(horario_cierre, "%H:%M").time()
@@ -26,9 +23,6 @@ class Peluqueria(object):
         #Carga los turnos al inicio si existe el archivo
         if os.path.exists("Turnos/turnos.json"):
             self.cargar_turnos_desde_json("Turnos/turnos.json")
-            
-        if os.path.exists("Peluqueros/peluqueros.csv"):
-            self.cargar_peluqueros_desde_csv("Peluqueros/peluqueros.csv")
     
     def buscar_cliente_por_telefono(self,telefono):
         for cliente in self.clientes:
@@ -54,12 +48,6 @@ class Peluqueria(object):
         self.guardar_clientes_en_csv()
         print(f"Cliente registrado: {cliente.nombre}")
         return cliente
-    
-    def registrar_peluquero(self, nombre, especialidad=""):
-        peluquero = Peluquero(nombre, especialidad)
-        self.peluqueros.append(peluquero)
-        self.guardar_peluqueros_en_csv()
-        return peluquero
 
     
     #Listo todos los clientes en memoria
@@ -87,32 +75,6 @@ class Peluqueria(object):
             print(f"{cliente.id:<6}{cliente.nombre:<20}{cliente.telefono:<15}{cliente.email:<19}")
         print("-" * 60)
     
-    
-    def listar_peluqueros(self):
-       try:
-           with open("Peluqueros/peluqueros.csv","r",newline="",encoding="utf-8") as file:
-               lector = csv.reader(file)
-               peluqueros = []
-               next(lector,None)
-               
-               for fila in lector:
-                   if len(fila) < 3:
-                       continue
-               
-               id_,nombre,especialidad = fila
-               peluqueros.append((id_,nombre,especialidad))
-               
-               if not peluqueros:
-                   print("No hay peluqueros registrados.")
-                   return
-               
-               print("\n ### Lista de peluqueros registrados ###")
-               for i, (id_,nombre,especialidad) in enumerate(peluqueros,start=1):
-                   esp = especialidad if especialidad else "Sin especialidad"
-                   print("-" *60)
-                   print(f"{i:<3}-{nombre:<20}{esp:<20} - ID: {id_}")
-       except FileNotFoundError:
-           print("El archivo de peluqueros no existe.")
         
     #Guardo todos los clientes en un csv
     def guardar_clientes_en_csv(self, archivo="Clientes/clientes.csv"):
@@ -123,17 +85,6 @@ class Peluqueria(object):
                 writer.writerow([cliente.id,cliente.nombre,cliente.telefono,cliente.email])
             print(f"Datos de clientes guardados en {archivo}.")
             
-    def guardar_peluqueros_en_csv(self,archivo="Peluqueros/peluqueros.csv"):
-        os.makedirs(os.path.dirname(archivo),exist_ok=True)
-        try:
-            with open(archivo,"w",newline="",encoding="utf-8") as file:
-                writer = csv.writer(file)
-                writer.writerow(["Id","Nombre","Especialidad"])
-                for peluquero in self.peluqueros:
-                    writer.writerow([peluquero.id,peluquero.nombre,peluquero.especialidad])
-            print(f"Datos de peluqueros guardados en {archivo}.")
-        except FileNotFoundError:
-            print(f"El archivo {archivo} no existe.")
     
     def cargar_clientes_desde_csv(self,archivo="Clientes/clientes.csv"):
         try:
@@ -147,29 +98,10 @@ class Peluqueria(object):
             print(f"Datos de clientes cargados desde {archivo}.")
         except FileNotFoundError:
             print(f"Error al cargar clientes desde {archivo}. Archivo no encontrado.")
-            
-    
-    def cargar_peluqueros_desde_csv(self,archivo="Peluqueros/peluqueros.csv"):
-        if not os.path.exists(archivo):
-            print("no existe el archivo de peluqueros")
-            return
-        try:
-            with open(archivo,"r",encoding="utf-8") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    peluquero = Peluquero(
-                        nombre = row["Nombre"],
-                        especialidad = row["Especialidad"]
-                    )
-                    peluquero.id = row["Id"]
-                    self.peluqueros.append(peluquero)
-        except FileNotFoundError:
-            print(f"Error al cargar peluqueros desde {archivo}. Archivo no encontrado.")
-
-            print(f"{len(self.peluqueros)} peluqueros cargados desde {archivo}.")
+              
     
     
-    #Area de gestion de turnos
+#Area de gestion de turnos
     
     def agregar_turno(self,cliente,fecha_hora,duracion,servicio):
         fecha_finalizacion = fecha_hora + timedelta(minutes=duracion)
