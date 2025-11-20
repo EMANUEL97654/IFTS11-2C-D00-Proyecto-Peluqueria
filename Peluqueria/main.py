@@ -130,8 +130,8 @@ def menu():
             
 
 #Donde se va a ejecutar el programa principal
-if __name__ == "__main__":
-    menu()
+""" if __name__ == "__main__":
+    menu() """
             
             
 #cargar cliente a ver si funciona el guardado en csv
@@ -197,3 +197,7 @@ especialidad = input("Ingrese la especialidad del peluquero: ")
 
 peluquero = pelu.registrar_peluquero(nombre_peluquero,especialidad)
 print(peluquero) """
+
+pelu = Peluqueria("Peluqueria Emanuel")
+pelu.listar_peluqueros()
+
