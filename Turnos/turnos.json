@@ -1,5 +1,14 @@
 [
     {
+        "Id": "feef",
+        "nombre": "Silvia Patricia",
+        "telefono": "1154893322",
+        "servicio": "corte",
+        "Fecha": "2025-11-23",
+        "Hora": "09:00",
+        "duracion": "30"
+    },
+    {
         "Id": "6175",
         "nombre": "Juan Perez",
         "telefono": "123456789",
@@ -7,5 +16,14 @@
         "Fecha": "2025-11-24",
         "Hora": "17:00",
         "duracion": "60"
+    },
+    {
+        "Id": "85a6",
+        "nombre": "Ana",
+        "telefono": "12345678777",
+        "servicio": "corte",
+        "Fecha": "2025-11-25",
+        "Hora": "09:15",
+        "duracion": "30"
     }
 ]

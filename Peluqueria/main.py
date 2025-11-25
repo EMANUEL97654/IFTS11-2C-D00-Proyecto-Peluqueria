@@ -21,6 +21,7 @@ def menu():
         
         try:
             if opcion == "1":
+                peluqueria.listar_clientes()
                 nombre = input("Ingrese el nombre del cliente: ")
                 telefono = input("Ingrese el telefono del cliente: ")
                 email = input("Ingrese el email del cliente: ")
